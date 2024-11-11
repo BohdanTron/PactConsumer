@@ -4,6 +4,44 @@
   },
   "interactions": [
     {
+      "description": "a request to get a non-existing student",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no student with id 11 exists"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Accept": [
+            "application/json"
+          ],
+          "Authorization": [
+            "Bearer 2024-01-14T11:34:18.045Z"
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/students/11"
+      },
+      "response": {
+        "status": 404
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
       "description": "a request to get a student",
       "pending": false,
       "providerStates": [

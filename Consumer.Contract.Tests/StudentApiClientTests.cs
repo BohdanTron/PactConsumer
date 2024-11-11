@@ -50,7 +50,31 @@ namespace Consumer.Contract.Tests
         }
 
         [Fact]
-        public async Task GetProduct_MissingAuthHeader()
+        public async Task GetById_NotExist()
+        {
+            // Arrange
+            _pactBuilder
+                .UponReceiving("a request to get a non-existing student")
+                    .Given("no student with id 11 exists")
+                    .WithRequest(HttpMethod.Get, "/students/11")
+                    .WithHeader("Authorization", Match.Regex("Bearer 2024-01-14T11:34:18.045Z", "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"))
+                    .WithHeader("Accept", "application/json")
+                .WillRespond()
+                    .WithStatus(HttpStatusCode.NotFound);
+
+            await _pactBuilder.VerifyAsync(async ctx =>
+            {
+                // Act
+                var apiClient = new StudentApiClient(ctx.MockServerUri);
+                var student = await apiClient.GetStudentById(11);
+
+                // Assert
+                student.Should().BeNull();
+            });
+        }
+
+        [Fact]
+        public async Task GetStudent_MissingAuthHeader()
         {
             // Arrange
             _pactBuilder
