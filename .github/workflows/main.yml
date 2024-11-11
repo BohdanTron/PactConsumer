@@ -59,7 +59,7 @@ jobs:
           --to-environment stage \
           --broker-base-url $PACT_BROKER_BASE_URL \
           --broker-token $PACT_BROKER_TOKEN \
-          --retry-while-unknown 5
+          --retry-while-unknown 5 \
           --retry-interval 10
 
 
