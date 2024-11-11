@@ -58,7 +58,9 @@ jobs:
           --version $GIT_COMMIT \
           --to-environment stage \
           --broker-base-url $PACT_BROKER_BASE_URL \
-          --broker-token $PACT_BROKER_TOKEN
+          --broker-token $PACT_BROKER_TOKEN \
+          --retry-while-unknown 5
+          --retry-interval 10
 
 
     - name: Record Consumer Deployment in Stage
