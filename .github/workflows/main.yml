@@ -1,0 +1,74 @@
+name: Consumer Tests
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  PACT_BROKER_BASE_URL: ${{ secrets.PACTFLOW_BASE_URL }}
+  PACT_BROKER_TOKEN: ${{ secrets.PACTFLOW_TOKEN }}
+  GIT_COMMIT: ${{ github.sha }}
+  BRANCH_NAME: ${{ github.ref_name }}
+  BUILD_URL: "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    # Run consumer tests
+    - name: Run Consumer tests
+      run: dotnet test ./Consumer.Contract.Tests/Consumer.Contract.Tests.csproj --no-build --configuration Release --verbosity normal 
+
+    - name: Publish Consumer tests to PactFlow
+      run: |
+          docker run --rm \
+          -v $(pwd)/Consumer.Contract.Tests/pacts:/pacts \
+          pactfoundation/pact-cli:latest \
+          publish /pacts \
+          --consumer-app-version $GIT_COMMIT \
+          --branch $BRANCH_NAME \
+          --build-url $BUILD_URL \
+          --broker-base-url $PACT_BROKER_BASE_URL \
+          --broker-token $PACT_BROKER_TOKEN
+
+    - name: Can I Deploy (Consumer) ?
+      run: |
+          docker run --rm \
+          pactfoundation/pact-cli:latest \
+          broker can-i-deploy \
+          --pacticipant StudentApiClient \
+          --version $GIT_COMMIT \
+          --to-environment stage \
+          --broker-base-url $PACT_BROKER_BASE_URL \
+          --broker-token $PACT_BROKER_TOKEN
+
+
+    - name: Record Consumer Deployment in Stage
+      if: success()
+      run: |
+        docker run --rm \
+          pactfoundation/pact-cli:latest \
+          broker record-deployment \
+          --pacticipant StudentApiClient \
+          --version $(git rev-parse --short HEAD) \
+          --environment stage \
+          --broker-base-url $PACT_BROKER_BASE_URL \
+          --broker-token $PACT_BROKER_TOKEN
