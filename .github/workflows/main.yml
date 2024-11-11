@@ -62,7 +62,6 @@ jobs:
 
 
     - name: Record Consumer Deployment in Stage
-      if: success()
       run: |
         docker run --rm \
           pactfoundation/pact-cli:latest \
