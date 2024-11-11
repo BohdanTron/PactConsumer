@@ -1,0 +1,126 @@
+{
+  "consumer": {
+    "name": "StudentApiClient"
+  },
+  "interactions": [
+    {
+      "description": "a request to get a student",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "student with id 10 exists"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Accept": [
+            "application/json"
+          ],
+          "Authorization": [
+            "Bearer 2024-01-14T11:34:18.045Z"
+          ]
+        },
+        "matchingRules": {
+          "header": {
+            "Authorization": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"
+                }
+              ]
+            }
+          }
+        },
+        "method": "GET",
+        "path": "/students/10"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "address": "1234, 56th Street, San Francisco, USA",
+            "firstName": "James",
+            "gender": "male",
+            "id": 10,
+            "lastName": "Hetfield"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=utf-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "contents": {
+        "content": {
+          "id": 10
+        },
+        "contentType": "application/json",
+        "encoded": false
+      },
+      "description": "an event indicating that a student has been created",
+      "matchingRules": {
+        "body": {
+          "$.id": {
+            "combine": "AND",
+            "matchers": [
+              {
+                "match": "integer"
+              }
+            ]
+          }
+        }
+      },
+      "pending": false,
+      "type": "Asynchronous/Messages"
+    },
+    {
+      "description": "an unauthorized request to get a student",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no auth token is provided"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/students/10"
+      },
+      "response": {
+        "status": 401
+      },
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pactRust": {
+      "ffi": "0.4.23",
+      "models": "1.2.5"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "StudentApi"
+  }
+}
