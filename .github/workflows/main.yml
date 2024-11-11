@@ -68,7 +68,7 @@ jobs:
           pactfoundation/pact-cli:latest \
           broker record-deployment \
           --pacticipant StudentApiClient \
-          --version $(git rev-parse --short HEAD) \
+          --version $GIT_COMMIT \
           --environment stage \
           --broker-base-url $PACT_BROKER_BASE_URL \
           --broker-token $PACT_BROKER_TOKEN
