@@ -64,27 +64,10 @@ stages:
           --broker-token $(PACT_BROKER_TOKEN)
       displayName: 'Publish Contract Tests to PactFlow'
 
-- stage: CanIDeploy
-  displayName: 'Can I Deploy?'
-  dependsOn: PublishContractTests
-  jobs:
-  - job: CanIDeploy
-    displayName: 'Check Can I Deploy Status'
-    variables:
-      - group: PactFlowSettings
-    steps:
-    - script: |
-        docker run --rm \
-          pactfoundation/pact-cli:latest \
-          broker can-i-deploy \
-          --pacticipant StudentApiClient \
-          --version $(GIT_COMMIT) \
-          --to-environment stage \
-          --broker-base-url $(PACT_BROKER_BASE_URL) \
-          --broker-token $(PACT_BROKER_TOKEN) \
-          --retry-while-unknown 5 \
-          --retry-interval 10
-      displayName: 'Can I Deploy (Consumer)'
+- template: can-i-deploy-template.yml
+  parameters:
+    pacticipant: 'StudentApiClient'
+    environment: 'stage'
 
 - stage: DeployAndRecordDeployment
   displayName: 'Deploy and Record Deployment'
