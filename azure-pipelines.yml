@@ -40,7 +40,7 @@ stages:
 
 - stage: RunContractTestsAndPublish
   displayName: 'Run Contract Tests and Publish'
-  dependsOn: BuildProject
+  dependsOn: Build
   jobs:
   - job: RunTestsAndPublish
     displayName: 'Run Contract Tests and Publish to PactFlow'
