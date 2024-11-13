@@ -1,0 +1,27 @@
+parameters:
+  - name: pactDirectory
+    type: string
+    default: 'Consumer.Contract.Tests/pacts'
+
+stages:
+- stage: PublishContractTests
+  displayName: 'Publish Contract Tests'
+  variables:
+    BUILD_URL: "https://dev.azure.com/tronbodya/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
+  jobs:
+  - job: PublishContractTests
+    displayName: 'Publish Contract Tests to PactFlow'
+    variables:
+      - group: PactFlowSettings
+    steps:
+    - script: |
+        docker run --rm \
+          -v $(System.DefaultWorkingDirectory)/${{ parameters.pactDirectory }}:/pacts \
+          pactfoundation/pact-cli:latest \
+          publish /pacts \
+          --consumer-app-version $(Build.SourceVersion) \
+          --branch $(Build.SourceBranchName) \
+          --build-url $(BUILD_URL) \
+          --broker-base-url $(PACT_BROKER_BASE_URL) \
+          --broker-token $(PACT_BROKER_TOKEN)
+      displayName: 'Publish Contract Tests to PactFlow'
