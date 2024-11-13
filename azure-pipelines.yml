@@ -70,7 +70,7 @@ stages:
 
 - stage: CanIDeploy
   displayName: 'Can I Deploy?'
-  dependsOn: RunContractTestsAndPublish
+  dependsOn: PublishContractTests
   jobs:
   - job: CanIDeploy
     displayName: 'Check Can I Deploy Status'
