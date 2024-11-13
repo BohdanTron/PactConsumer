@@ -13,63 +13,95 @@ variables:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '8.0.x'
-  displayName: 'Setup .NET'
+stages:
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'restore'
-  displayName: 'Restore dependencies'
+- stage: Build
+  displayName: 'Build Project'
+  jobs:
+  - job: Build
+    displayName: 'Build Job'
+    steps:
+    - task: UseDotNet@2
+      inputs:
+        packageType: 'sdk'
+        version: '8.0.x'
+      displayName: 'Setup .NET'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    arguments: '--configuration Release'
-  displayName: 'Build'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'restore'
+      displayName: 'Restore Dependencies'
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: 'Consumer.Contract.Tests/Consumer.Contract.Tests.csproj'
-    arguments: '--no-build --configuration Release --verbosity normal'
-  displayName: 'Run Consumer Tests'
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'build'
+        arguments: '--configuration Release'
+      displayName: 'Build the Project'
 
-- script: |
-    docker run --rm \
-      -v $(System.DefaultWorkingDirectory)/Consumer.Contract.Tests/pacts:/pacts \
-      pactfoundation/pact-cli:latest \
-      publish /pacts \
-      --consumer-app-version $(GIT_COMMIT) \
-      --branch $(BRANCH_NAME) \
-      --build-url $(BUILD_URL) \
-      --broker-base-url $(PACT_BROKER_BASE_URL) \
-      --broker-token $(PACT_BROKER_TOKEN)
-  displayName: 'Publish Consumer Tests to PactFlow'
+- stage: RunContractTestsAndPublish
+  displayName: 'Run Contract Tests and Publish'
+  dependsOn: BuildProject
+  jobs:
+  - job: RunTestsAndPublish
+    displayName: 'Run Contract Tests and Publish to PactFlow'
+    steps:
+    - task: DotNetCoreCLI@2
+      inputs:
+        command: 'test'
+        projects: 'Consumer.Contract.Tests/Consumer.Contract.Tests.csproj'
+        arguments: '--no-build --configuration Release --verbosity normal'
+      displayName: 'Run Contract Tests'
 
-- script: |
-    docker run --rm \
-      pactfoundation/pact-cli:latest \
-      broker can-i-deploy \
-      --pacticipant StudentApiClient \
-      --version $(GIT_COMMIT) \
-      --to-environment stage \
-      --broker-base-url $(PACT_BROKER_BASE_URL) \
-      --broker-token $(PACT_BROKER_TOKEN) \
-      --retry-while-unknown 5 \
-      --retry-interval 10
-  displayName: 'Can I Deploy (Consumer)?'
+    - script: |
+        docker run --rm \
+          -v $(System.DefaultWorkingDirectory)/Consumer.Contract.Tests/pacts:/pacts \
+          pactfoundation/pact-cli:latest \
+          publish /pacts \
+          --consumer-app-version $(GIT_COMMIT) \
+          --branch $(BRANCH_NAME) \
+          --build-url $(BUILD_URL) \
+          --broker-base-url $(PACT_BROKER_BASE_URL) \
+          --broker-token $(PACT_BROKER_TOKEN)
+      displayName: 'Publish Contract Tests to PactFlow'
 
-- script: |
-    docker run --rm \
-      pactfoundation/pact-cli:latest \
-      broker record-deployment \
-      --pacticipant StudentApiClient \
-      --version $(GIT_COMMIT) \
-      --environment stage \
-      --broker-base-url $(PACT_BROKER_BASE_URL) \
-      --broker-token $(PACT_BROKER_TOKEN)
-  displayName: 'Record Consumer Deployment in Stage'
+- stage: CanIDeploy
+  displayName: 'Can I Deploy?'
+  dependsOn: RunContractTestsAndPublish
+  jobs:
+  - job: CanIDeploy
+    displayName: 'Check Can I Deploy Status'
+    steps:
+    - script: |
+        docker run --rm \
+          pactfoundation/pact-cli:latest \
+          broker can-i-deploy \
+          --pacticipant StudentApiClient \
+          --version $(GIT_COMMIT) \
+          --to-environment stage \
+          --broker-base-url $(PACT_BROKER_BASE_URL) \
+          --broker-token $(PACT_BROKER_TOKEN) \
+          --retry-while-unknown 5 \
+          --retry-interval 10
+      displayName: 'Can I Deploy (Consumer)'
+
+- stage: DeployAndRecordDeployment
+  displayName: 'Deploy and Record Deployment'
+  dependsOn: CanIDeploy
+  jobs:
+  - job: DeployAndRecord
+    displayName: 'Deploy and Record Deployment in PactFlow'
+    steps:
+    - script: |
+        echo "Deploying the application..."
+      displayName: 'Deploy Application'
+
+    - script: |
+        docker run --rm \
+          pactfoundation/pact-cli:latest \
+          broker record-deployment \
+          --pacticipant StudentApiClient \
+          --version $(GIT_COMMIT) \
+          --environment stage \
+          --broker-base-url $(PACT_BROKER_BASE_URL) \
+          --broker-token $(PACT_BROKER_TOKEN)
+      displayName: 'Record Deployment in PactFlow'
