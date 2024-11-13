@@ -4,8 +4,8 @@ trigger:
       - master
 
 variables:
-  PACT_BROKER_BASE_URL: $(PACTFLOW_BASE_URL)
-  PACT_BROKER_TOKEN: $(PACTFLOW_TOKEN)
+  - group: PactFlowSettings
+  
   GIT_COMMIT: $(Build.SourceVersion)
   BRANCH_NAME: $(Build.SourceBranchName)
   BUILD_URL: "https://dev.azure.com/tronbodya/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
@@ -21,9 +21,6 @@ stages:
   - job: Build
     displayName: 'Build Job'
     steps:
-    - checkout: self
-      persistCredentials: true
-
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
@@ -55,7 +52,6 @@ stages:
   - job: PublishContractTests
     displayName: 'Publish Contract Tests to PactFlow'
     steps:
-
     - script: |
         docker run --rm \
           -v $(System.DefaultWorkingDirectory)/Consumer.Contract.Tests/pacts:/pacts \
