@@ -4,9 +4,6 @@ parameters:
   - name: environment
     type: string
 
-variables:
-  - group: PactFlowSettings
-
 steps:
   - script: |
       docker run --rm \
