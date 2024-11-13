@@ -3,11 +3,6 @@ trigger:
     include:
       - master
 
-variables:
-  GIT_COMMIT: $(Build.SourceVersion)
-  BRANCH_NAME: $(Build.SourceBranchName)
-  BUILD_URL: "https://dev.azure.com/tronbodya/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
-
 pool:
   vmImage: 'ubuntu-latest'
 
