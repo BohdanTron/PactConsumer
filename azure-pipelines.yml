@@ -8,6 +8,7 @@ pool:
 
 stages:
 
+# TODO: Explicitly checkout repository
 - stage: Build
   displayName: 'Build and Run Tests'
   jobs:
