@@ -22,7 +22,8 @@ stages:
     displayName: 'Build Job'
     steps:
     - checkout: self
-    
+      persistCredentials: true
+
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
