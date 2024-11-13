@@ -4,8 +4,6 @@ trigger:
       - master
 
 variables:
-  - group: PactFlowSettings
-  
   GIT_COMMIT: $(Build.SourceVersion)
   BRANCH_NAME: $(Build.SourceBranchName)
   BUILD_URL: "https://dev.azure.com/tronbodya/$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)"
@@ -51,6 +49,8 @@ stages:
   jobs:
   - job: PublishContractTests
     displayName: 'Publish Contract Tests to PactFlow'
+    variables:
+      - group: PactFlowSettings
     steps:
     - script: |
         docker run --rm \
@@ -70,6 +70,8 @@ stages:
   jobs:
   - job: CanIDeploy
     displayName: 'Check Can I Deploy Status'
+    variables:
+      - group: PactFlowSettings
     steps:
     - script: |
         docker run --rm \
@@ -90,6 +92,8 @@ stages:
   jobs:
   - job: DeployAndRecord
     displayName: 'Deploy and Record Deployment in PactFlow'
+    variables:
+      - group: PactFlowSettings
     steps:
     - script: |
         echo "Deploying the application..."
