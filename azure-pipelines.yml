@@ -16,7 +16,7 @@ pool:
 stages:
 
 - stage: Build
-  displayName: 'Build Project'
+  displayName: 'Build and Run Tests'
   jobs:
   - job: Build
     displayName: 'Build Job'
@@ -41,19 +41,20 @@ stages:
         arguments: '--configuration Release'
       displayName: 'Build the Project'
 
-- stage: RunContractTestsAndPublish
-  displayName: 'Run Contract Tests and Publish'
-  dependsOn: Build
-  jobs:
-  - job: RunTestsAndPublish
-    displayName: 'Run Contract Tests and Publish to PactFlow'
-    steps:
     - task: DotNetCoreCLI@2
       inputs:
         command: 'test'
         projects: 'Consumer.Contract.Tests/Consumer.Contract.Tests.csproj'
         arguments: '--no-build --configuration Release --verbosity normal'
       displayName: 'Run Contract Tests'
+
+- stage: PublishContractTests
+  displayName: 'Publish Contract Tests'
+  dependsOn: Build
+  jobs:
+  - job: PublishContractTests
+    displayName: 'Publish Contract Tests to PactFlow'
+    steps:
 
     - script: |
         docker run --rm \
