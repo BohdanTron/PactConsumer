@@ -10,6 +10,10 @@ resources:
       ref: 'refs/heads/master'
       type: github
       endpoint: BohdanTron
+      trigger:
+        branches:
+          include:
+            - master
 
 
 pool:
