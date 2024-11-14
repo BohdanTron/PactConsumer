@@ -3,17 +3,13 @@ trigger:
     include:
       - master
 
-resources:
-  repositories:
-    - repository: PactConsumer
-      name: 'BohdanTron/PactConsumer'
-      ref: 'refs/heads/master'
-      type: github
-      endpoint: BohdanTron
-      trigger:
-        branches:
-          include:
-            - master
+# resources:
+#   repositories:
+#     - repository: PactConsumer
+#       name: 'BohdanTron/PactConsumer'
+#       ref: 'refs/heads/master'
+#       type: github
+#       endpoint: BohdanTron
 
 
 pool:
@@ -28,8 +24,8 @@ stages:
     displayName: 'Build Job'
     steps:
     
-    - checkout: PactConsumer
-      persistCredentials: true
+    # - checkout: PactConsumer
+    #   persistCredentials: true
 
     - task: UseDotNet@2
       inputs:
