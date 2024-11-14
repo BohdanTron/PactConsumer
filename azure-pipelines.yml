@@ -3,18 +3,29 @@ trigger:
     include:
       - master
 
+resources:
+  repositories:
+    - repository: PactConsumer
+      name: 'BohdanTron/PactConsumer'
+      ref: 'refs/heads/master'
+      type: github
+      endpoint: BohdanTron
+
+
 pool:
   vmImage: 'ubuntu-latest'
 
 stages:
 
-# TODO: Explicitly checkout repository
 - stage: Build
   displayName: 'Build and Run Tests'
   jobs:
   - job: Build
     displayName: 'Build Job'
     steps:
+    
+    - checkout: PactConsumer
+
     - task: UseDotNet@2
       inputs:
         packageType: 'sdk'
