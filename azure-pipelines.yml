@@ -3,14 +3,6 @@ trigger:
     include:
       - master
 
-# resources:
-#   repositories:
-#     - repository: PactConsumer
-#       name: 'BohdanTron/PactConsumer'
-#       ref: 'refs/heads/master'
-#       type: github
-#       endpoint: BohdanTron
-
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -24,8 +16,8 @@ stages:
     displayName: 'Build Job'
     steps:
     
-    # - checkout: PactConsumer
-    #   persistCredentials: true
+    - checkout: self
+      persistCredentials: true
 
     - task: UseDotNet@2
       inputs:
