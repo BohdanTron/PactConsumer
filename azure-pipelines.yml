@@ -25,6 +25,7 @@ stages:
     steps:
     
     - checkout: PactConsumer
+      persistCredentials: true
 
     - task: UseDotNet@2
       inputs:
