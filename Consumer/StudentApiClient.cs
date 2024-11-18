@@ -9,25 +9,33 @@ namespace Consumer
 
     public class StudentApiClient : IStudentApiClient
     {
-        private readonly HttpClient _httpClient;
+        private readonly IApiClient _apiClient;
 
-        public StudentApiClient(Uri? uri = null)
+        public StudentApiClient(IApiClient apiClient)
         {
-            // TODO: Replace with DI
-            _httpClient = new HttpClient { BaseAddress = uri ?? new Uri("http://localhost:5126/") };
+            _apiClient = apiClient;
         }
 
         public async Task<Student?> GetStudentById(int studentId)
         {
-            using var request = new HttpRequestMessage(HttpMethod.Get, $"/students/{studentId}");
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Authorization", $"Bearer {DateTime.Now:yyyy-MM-ddTHH:mm:ss.fffZ}");
+            var headerParams = new Dictionary<string, string>
+            {
+                { "X-correlation-id", Guid.NewGuid().ToString() }
+            };
 
-            var response = await _httpClient.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+            var response = (HttpResponseMessage) await _apiClient.CallApiAsync(
+                $"/students/{studentId}",
+                HttpMethod.Get,
+                new Dictionary<string, string>(),
+                null,
+                headerParams,
+                new Dictionary<string, string>(),
+                new Dictionary<string, string>());
 
             if (!response.IsSuccessStatusCode)
                 return null;
+
+            var content = await response.Content.ReadAsStringAsync();
 
             return JsonSerializer.Deserialize<Student>(content,
                 new JsonSerializerOptions

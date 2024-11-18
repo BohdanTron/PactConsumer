@@ -18,6 +18,9 @@
           ],
           "Authorization": [
             "Bearer 2024-01-14T11:34:18.045Z"
+          ],
+          "X-correlation-id": [
+            "AA8F3DB6-3FE3-489C-8BFB-F310CE493584"
           ]
         },
         "matchingRules": {
@@ -28,6 +31,14 @@
                 {
                   "match": "regex",
                   "regex": "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"
+                }
+              ]
+            },
+            "X-correlation-id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             }
@@ -56,6 +67,9 @@
           ],
           "Authorization": [
             "Bearer 2024-01-14T11:34:18.045Z"
+          ],
+          "X-correlation-id": [
+            "AA8F3DB6-3FE3-489C-8BFB-F310CE493584"
           ]
         },
         "matchingRules": {
@@ -66,6 +80,14 @@
                 {
                   "match": "regex",
                   "regex": "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"
+                }
+              ]
+            },
+            "X-correlation-id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
                 }
               ]
             }

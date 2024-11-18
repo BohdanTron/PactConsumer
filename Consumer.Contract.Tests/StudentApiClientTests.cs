@@ -1,9 +1,12 @@
 using System.Net;
+using System.Text.Json;
 using FluentAssertions;
+using Moq;
 using PactNet;
 using PactNet.Matchers;
 using PactNet.Output.Xunit;
 using Xunit.Abstractions;
+using Match = PactNet.Matchers.Match;
 
 namespace Consumer.Contract.Tests
 {
@@ -11,13 +14,20 @@ namespace Consumer.Contract.Tests
     {
         private readonly IPactBuilderV4 _pactBuilder;
 
+        private readonly Mock<IHttpClientFactory> _httpClientFactoryMock = new();
+
         public StudentApiClientTests(ITestOutputHelper output)
         {
             _pactBuilder = Pact.V4("StudentApiClient", "StudentApi", new PactConfig
             {
                 PactDir = Directory.GetParent(Directory.GetCurrentDirectory())?.Parent?.Parent?.FullName + "/pacts",
                 Outputters = [new XunitOutput(output)],
-                LogLevel = PactLogLevel.Debug
+                LogLevel = PactLogLevel.Debug,
+                DefaultJsonSettings = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    PropertyNameCaseInsensitive = true
+                }
             }).WithHttpInteractions();
         }
 
@@ -32,6 +42,7 @@ namespace Consumer.Contract.Tests
                     .Given("student with id 10 exists")
                     .WithRequest(HttpMethod.Get, "/students/10")
                     .WithHeader("Authorization", Match.Regex("Bearer 2024-01-14T11:34:18.045Z", "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"))
+                    .WithHeader("X-correlation-id", Match.Type("AA8F3DB6-3FE3-489C-8BFB-F310CE493584"))
                     .WithHeader("Accept", "application/json")
                 .WillRespond()
                 .WithStatus(HttpStatusCode.OK)
@@ -41,7 +52,11 @@ namespace Consumer.Contract.Tests
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                var apiClient = new StudentApiClient(ctx.MockServerUri);
+                _httpClientFactoryMock
+                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
+                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
+
+                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
                 var student = await apiClient.GetStudentById(10);
 
                 // Assert
@@ -59,13 +74,18 @@ namespace Consumer.Contract.Tests
                     .WithRequest(HttpMethod.Get, "/students/11")
                     .WithHeader("Authorization", Match.Regex("Bearer 2024-01-14T11:34:18.045Z", "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"))
                     .WithHeader("Accept", "application/json")
+                    .WithHeader("X-correlation-id", Match.Type("AA8F3DB6-3FE3-489C-8BFB-F310CE493584"))
                 .WillRespond()
                     .WithStatus(HttpStatusCode.NotFound);
 
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                var apiClient = new StudentApiClient(ctx.MockServerUri);
+                _httpClientFactoryMock
+                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
+                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
+
+                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
                 var student = await apiClient.GetStudentById(11);
 
                 // Assert
@@ -87,7 +107,11 @@ namespace Consumer.Contract.Tests
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                var apiClient = new StudentApiClient(ctx.MockServerUri);
+                _httpClientFactoryMock
+                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
+                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
+
+                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
                 var student = await apiClient.GetStudentById(10);
 
                 // Assert

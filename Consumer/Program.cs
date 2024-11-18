@@ -14,7 +14,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IStudentApiClient, StudentApiClient>();
+builder.Services.AddStudentApiClient();
 
 builder.Services.AddSingleton(_ =>
 {
