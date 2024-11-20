@@ -16,6 +16,11 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddStudentApiClient();
 
+builder.Services.AddHttpClient<IStudentApiClient, StudentApiClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5126/");
+});
+
 builder.Services.AddSingleton(_ =>
 {
     var blobConnection = builder.Configuration.GetConnectionString("StorageAccount");

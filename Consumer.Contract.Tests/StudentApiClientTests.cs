@@ -52,11 +52,7 @@ namespace Consumer.Contract.Tests
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                _httpClientFactoryMock
-                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
-                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
-
-                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
+                var apiClient = new StudentApiClient(new HttpClient { BaseAddress = ctx.MockServerUri });
                 var student = await apiClient.GetStudentById(10);
 
                 // Assert
@@ -81,11 +77,7 @@ namespace Consumer.Contract.Tests
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                _httpClientFactoryMock
-                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
-                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
-
-                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
+                var apiClient = new StudentApiClient(new HttpClient {BaseAddress = ctx.MockServerUri});
                 var student = await apiClient.GetStudentById(11);
 
                 // Assert
@@ -107,11 +99,7 @@ namespace Consumer.Contract.Tests
             await _pactBuilder.VerifyAsync(async ctx =>
             {
                 // Act
-                _httpClientFactoryMock
-                    .Setup(x => x.CreateClient(ServiceCollectionExtensions.HttpClientName))
-                    .Returns(new HttpClient { BaseAddress = ctx.MockServerUri });
-
-                var apiClient = new StudentApiClient(new ApiClient(_httpClientFactoryMock.Object));
+                var apiClient = new StudentApiClient(new HttpClient { BaseAddress = ctx.MockServerUri });
                 var student = await apiClient.GetStudentById(10);
 
                 // Assert

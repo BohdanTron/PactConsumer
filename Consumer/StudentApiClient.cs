@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.IO;
+using System.Text.Json;
 
 namespace Consumer
 {
@@ -9,28 +10,22 @@ namespace Consumer
 
     public class StudentApiClient : IStudentApiClient
     {
-        private readonly IApiClient _apiClient;
+        private readonly HttpClient _httpClient;
 
-        public StudentApiClient(IApiClient apiClient)
+        public StudentApiClient(HttpClient httpClient)
         {
-            _apiClient = apiClient;
+            _httpClient = httpClient;
         }
 
         public async Task<Student?> GetStudentById(int studentId)
         {
-            var headerParams = new Dictionary<string, string>
-            {
-                { "X-correlation-id", Guid.NewGuid().ToString() }
-            };
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/students/{studentId}");
 
-            var response = (HttpResponseMessage) await _apiClient.CallApiAsync(
-                $"/students/{studentId}",
-                HttpMethod.Get,
-                new Dictionary<string, string>(),
-                null,
-                headerParams,
-                new Dictionary<string, string>(),
-                new Dictionary<string, string>());
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Authorization", $"Bearer {DateTime.Now:yyyy-MM-ddTHH:mm:ss.fffZ}");
+            request.Headers.Add("X-correlation-id", Guid.NewGuid().ToString());
+
+            var response = await _httpClient.SendAsync(request);
 
             if (!response.IsSuccessStatusCode)
                 return null;
