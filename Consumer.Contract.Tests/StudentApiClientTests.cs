@@ -40,8 +40,7 @@ namespace Consumer.Contract.Tests
                 id = 10, 
                 firstName = "James", 
                 lastName = "Hetfield", 
-                address = "1234, 56th Street, San Francisco, USA",
-                gender = "male"
+                address = "1234, 56th Street, San Francisco, USA"
             };
 
             _pactBuilder

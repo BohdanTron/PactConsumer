@@ -101,7 +101,6 @@
           "content": {
             "address": "1234, 56th Street, San Francisco, USA",
             "firstName": "James",
-            "gender": "male",
             "id": 10,
             "lastName": "Hetfield"
           },
