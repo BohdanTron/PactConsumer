@@ -41,7 +41,7 @@ namespace Consumer.Contract.Tests
                 firstName = "James", 
                 lastName = "Hetfield", 
                 address = "1234, 56th Street, San Francisco, USA",
-                gender = "male", invalid = "invalid"
+                gender = "male"
             };
 
             _pactBuilder
