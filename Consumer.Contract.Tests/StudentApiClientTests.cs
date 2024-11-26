@@ -35,7 +35,14 @@ namespace Consumer.Contract.Tests
         public async Task GetById_Exist()
         {
             // Arrange
-            var expectedStudent = new { id = 10, firstName = "James", lastName = "Hetfield", address = "1234, 56th Street, San Francisco, USA", gender = "male" };
+            var expectedStudent = new
+            {
+                id = 10, 
+                firstName = "James", 
+                lastName = "Hetfield", 
+                address = "1234, 56th Street, San Francisco, USA",
+                gender = "male", invalid = "invalid"
+            };
 
             _pactBuilder
                 .UponReceiving("a request to get a student")
