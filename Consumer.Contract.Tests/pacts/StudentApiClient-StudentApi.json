@@ -99,8 +99,9 @@
       "response": {
         "body": {
           "content": {
-            "address": "1234, 56th Street, San Francisco, USA",
+            "address": "1234, 56th Street, San Francisco, USA, CHANGED",
             "firstName": "James",
+            "gender": "male",
             "id": 10,
             "lastName": "Hetfield"
           },
