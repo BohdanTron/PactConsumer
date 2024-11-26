@@ -103,6 +103,7 @@
             "firstName": "James",
             "gender": "male",
             "id": 10,
+            "invalid": "invalid",
             "lastName": "Hetfield"
           },
           "contentType": "application/json",
