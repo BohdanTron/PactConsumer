@@ -42,6 +42,7 @@ namespace Consumer.Contract.Tests
                     .Given("student with id 10 exists")
                     .WithRequest(HttpMethod.Get, "/students/10")
                     .WithHeader("Authorization", Match.Regex("Bearer 2024-01-14T11:34:18.045Z", "Bearer \\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z"))
+                    .WithHeader("X-correlation-id", Match.Type("AA8F3DB6-3FE3-489C-8BFB-F310CE493584"))
                     .WithHeader("Accept", "application/json")
                 .WillRespond()
                 .WithStatus(HttpStatusCode.OK)
