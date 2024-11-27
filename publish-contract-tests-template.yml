@@ -20,7 +20,8 @@ stages:
           pactfoundation/pact-cli:latest \
           publish /pacts \
           --consumer-app-version $(Build.SourceVersion) \
-          --auto-detect-version-properties \
+          --branch $(Build.SourceBranchName) \
+          --build-url $(BUILD_URL) \
           --broker-base-url $(PACT_BROKER_BASE_URL) \
           --broker-token $(PACT_BROKER_TOKEN)
       displayName: 'Publish Contract Tests to PactFlow'
