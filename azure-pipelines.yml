@@ -41,6 +41,8 @@ stages:
         command: 'test'
         projects: 'Consumer.Contract.Tests/Consumer.Contract.Tests.csproj'
         arguments: '--no-build --configuration Release --verbosity normal'
+        publishTestResults: true
+        testRunTitle: Consumer_ContractTests
       displayName: 'Run Contract Tests'
 
 - template: publish-contract-tests-template.yml
