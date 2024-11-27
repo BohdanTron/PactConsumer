@@ -19,6 +19,7 @@ stages:
           -v $(System.DefaultWorkingDirectory)/${{ parameters.pactDirectory }}:/pacts \
           pactfoundation/pact-cli:latest \
           publish /pacts \
+          --consumer-app-version $(Build.SourceVersion) \
           --auto-detect-version-properties \
           --broker-base-url $(PACT_BROKER_BASE_URL) \
           --broker-token $(PACT_BROKER_TOKEN)
