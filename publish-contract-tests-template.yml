@@ -15,6 +15,8 @@ stages:
       - group: PactFlowSettings
     steps:
     - script: |
+        echo "Listing files in ${{ parameters.pactDirectory }}"
+        ls -la ${{ parameters.pactDirectory }}
         docker run --rm \
           -v $(System.DefaultWorkingDirectory)/${{ parameters.pactDirectory }}:/pacts \
           pactfoundation/pact-cli:latest \
